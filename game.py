@@ -27,12 +27,23 @@ class Game:
     define the game board handling game board rendering and game moves
     provide ai solvers for other modules to utilize
     """
-    def __init__(self):
+    def __init__(self, is_with_ai = False, is_ai_turn = False):
         self.board = [[i * 3 + j + 1 for j in range(3)] for i in range(3)]
         self.cur_move = "X"
         self.next_move = "O"
         self.is_ended = False
         self.moves = []
+        self.is_with_ai = is_with_ai
+        self.is_ai_turn = is_ai_turn
+
+    def is_cell_empty(self, row, col):
+        """
+        check if cell is empty
+        :param row: row number
+        :param col: column number
+        :return: bool
+        """
+        return self.board[row][col] not in MOVES
 
     def make_move(self, row, col):
         """
@@ -43,12 +54,12 @@ class Game:
         :param col: column number of cell
         :return: None
         """
-        if self.board[row][col] in MOVES:
-            print("Cell already occupied.")
-        else:
+        if self.is_cell_empty(row, col):
             self.board[row][col] = self.cur_move
             self.cur_move, self.next_move = self.next_move, self.cur_move
             self.moves.append((row, col))
+        else:
+            print("Cell already occupied.")
 
     def clear_move(self, row, col):
         """
@@ -180,7 +191,7 @@ class Game:
         candidates = []
         for i in range(3):
             for j in range(3):
-                if self.board[i][j] not in MOVES:
+                if self.is_cell_empty(i, j):
                     candidates.append((i, j))
         return candidates
 
@@ -311,3 +322,10 @@ class Game:
             return self.solver_mid(candidates)
         if diff == 3:
             return self.solver_hard(candidates)
+
+    def update_ai_turn(self):
+        """
+        After a successful move change player
+        :return: None
+        """
+        self.is_ai_turn ^= True

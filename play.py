@@ -94,12 +94,15 @@ def play_with_ai(diff, is_ai_turn):
     :param is_ai_turn: is AI playing first turn
     :return: None
     """
-    game = Game()
+    game = Game(True, is_ai_turn)
     game.print_board()
     while not game.is_ended:
-        row, col = game.solver(diff) if is_ai_turn else get_player_move()
-        is_ai_turn ^= True
-        res = update_move(game, row, col)
+        row, col = game.solver(diff) if game.is_ai_turn else get_player_move()
+        if game.is_cell_empty(row, col):
+            res = update_move(game, row, col)
+            game.update_ai_turn()
+        else:
+            game.make_move(row, col)
     print(res)
 
 
